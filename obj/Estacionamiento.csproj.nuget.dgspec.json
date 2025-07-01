@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\QUICAN\\OneDrive\\Escritorio\\parcial2-atep\\Estacionamiento\\Estacionamiento.csproj": {}
+    "C:\\Users\\Usuario\\Desktop\\Parcial2Programacion\\Estacionamiento-CSharp\\Estacionamiento.csproj": {}
   },
   "projects": {
-    "C:\\Users\\QUICAN\\OneDrive\\Escritorio\\parcial2-atep\\Estacionamiento\\Estacionamiento.csproj": {
+    "C:\\Users\\Usuario\\Desktop\\Parcial2Programacion\\Estacionamiento-CSharp\\Estacionamiento.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\QUICAN\\OneDrive\\Escritorio\\parcial2-atep\\Estacionamiento\\Estacionamiento.csproj",
+        "projectUniqueName": "C:\\Users\\Usuario\\Desktop\\Parcial2Programacion\\Estacionamiento-CSharp\\Estacionamiento.csproj",
         "projectName": "Estacionamiento",
-        "projectPath": "C:\\Users\\QUICAN\\OneDrive\\Escritorio\\parcial2-atep\\Estacionamiento\\Estacionamiento.csproj",
-        "packagesPath": "C:\\Users\\QUICAN\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\QUICAN\\OneDrive\\Escritorio\\parcial2-atep\\Estacionamiento\\obj\\",
+        "projectPath": "C:\\Users\\Usuario\\Desktop\\Parcial2Programacion\\Estacionamiento-CSharp\\Estacionamiento.csproj",
+        "packagesPath": "C:\\Users\\Usuario\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Usuario\\Desktop\\Parcial2Programacion\\Estacionamiento-CSharp\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\QUICAN\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\Usuario\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
@@ -59,7 +59,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.300/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.301/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
