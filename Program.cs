@@ -1,36 +1,36 @@
 ﻿using System;
-using System.Linq; // Necesario para el método .Any() que se usa en PatenteYaExisteEnArea
+using System.Linq; // este es necesaio para el método .Any() que se usa en PatenteYaExisteEnArea
 
 namespace EstacionamientoPremium
 {
     internal class Program
     {
-        // Constantes de capacidad
+        // para la capacidad
         private const int MAX_MOTOS = 20;
         private const int MAX_GRANDES = 30;
 
-        // Tipos de vehículo
+        // para los tipos de vehículo
         private const int TIPO_MOTO = 1;
         private const int TIPO_AUTO = 2;
         private const int TIPO_CAMIONETA = 3;
 
-        // Precios por salida
+        // para los precios 
         private const int PRECIO_MOTO = 800;
         private const int PRECIO_AUTO = 1500;
         private const int PRECIO_CAMIONETA = 1800;
 
-        // Estructuras de datos
+        // Estructuras de datos: usamos el array (ARREGLOS)
         private static readonly string[] EspaciosMotos = new string[MAX_MOTOS];
         private static readonly int[] TipoVehiculoMotos = new int[MAX_MOTOS];
 
         private static readonly string[] EspaciosGrandes = new string[MAX_GRANDES];
         private static readonly int[] TipoVehiculoGrandes = new int[MAX_GRANDES];
 
-        // Contadores de ocupación
+        // Contadores de los lugares ocupados
         private static int MotosOcupadas;
         private static int GrandesOcupados;
 
-        // Caja acumulada
+        // El ingreso que vamos a tener en las cajas
         private static int CajaTotal;
         private static int CajaMotos;
         private static int CajaAutos;
@@ -82,8 +82,7 @@ namespace EstacionamientoPremium
 
         private static void MostrarMenu()
         {
-            Console.WriteLine("----|           °°°°°°°°°°°°°°°°°°°°°°°°°           |-----");
-            Console.WriteLine("              SISTEMA   ESTACIONAMIENTO PREMIUM");
+            Console.WriteLine("------------- SISTEMA ESTACIONAMIENTO PREMIUM ----------");
             Console.WriteLine("1) Estado del estacionamiento");
             Console.WriteLine("2) Registrar entrada");
             Console.WriteLine("3) Liberar lugar y cobrar");
@@ -252,7 +251,6 @@ namespace EstacionamientoPremium
             }
         }
 
-        // NUEVA FUNCIÓN: Verifica si una patente YA EXISTE para un tipo específico en un área dada.
         // Esto permite que "123" (Moto) y "123" (Auto) coexistan.
         private static bool PatenteYaExisteEnArea(string patente, string[] espacios, int[] tipos, int tipoBuscado)
         {
@@ -276,7 +274,6 @@ namespace EstacionamientoPremium
                 return;
             }
 
-            // AHORA: Verificamos si esta combinación específica (patente + tipo de vehículo)
             // ya está registrada en esta área.
             if (PatenteYaExisteEnArea(patente, espacios, tipos, tipoVehiculo))
             {
@@ -343,7 +340,7 @@ namespace EstacionamientoPremium
             Pausa();
         }
 
-        // Nueva función para seleccionar el tipo de vehículo al salir/reubicar
+        // función para seleccionar el tipo de vehículo al salir/reubicar
         private static int SeleccionarTipoVehiculoParaSalida()
         {
             while (true)
@@ -354,7 +351,7 @@ namespace EstacionamientoPremium
             }
         }
 
-        // Modificada para buscar por patente Y tipo de vehículo
+        // buscar por patente Y tipo de vehículo
         private static bool EliminarDeArea(string patente, int tipoVehiculoBuscado, string[] espacios, int[] tipos, int capacidad, ref int ocupados, int? precioFijo)
         {
             for (int i = 0; i < capacidad; i++)
