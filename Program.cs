@@ -82,7 +82,7 @@ namespace EstacionamientoPremium
         private static void MostrarMenu()
         {
             Console.WriteLine("----|           °°°°°°°°°°°°°°°°°°°°°°°°°          |-----");
-            Console.WriteLine("           SISTEMA   ESTACIONAMIENTO  quokka111");
+            Console.WriteLine("           SISTEMA   ESTACIONAMIENTO  quokkaAssefYOPUSEESTO");
             Console.WriteLine("1) Estado del estacionamiento");
             Console.WriteLine("2) Registrar entrada");
             Console.WriteLine("3) Liberar lugar y cobrar");
