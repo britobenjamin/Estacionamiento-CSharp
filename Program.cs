@@ -88,7 +88,7 @@ namespace EstacionamientoPremium
             Console.WriteLine("3) Liberar lugar y cobrar");
             Console.WriteLine("4) Mostrar caja");
             Console.WriteLine("5) Reubicar vehículo");
-            Console.WriteLine("6) Salir");
+            Console.WriteLine("6) Salirrrrrrrrrrr");
             Console.WriteLine("----------------------------------------------------------");
         }
 
