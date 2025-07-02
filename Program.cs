@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq; // Necesario para el método .Any() que se usa en PatenteYaExisteEnArea
 
 namespace EstacionamientoPremium
 {
@@ -81,14 +82,14 @@ namespace EstacionamientoPremium
 
         private static void MostrarMenu()
         {
-            Console.WriteLine("----|           °°°°°°°°°°°°°°°°°°°°°°°°°          |-----");
-            Console.WriteLine("           SISTEMA   ESTACIONAMIENTO LeagueOfLegends");
+            Console.WriteLine("----|           °°°°°°°°°°°°°°°°°°°°°°°°°           |-----");
+            Console.WriteLine("              SISTEMA   ESTACIONAMIENTO PREMIUM");
             Console.WriteLine("1) Estado del estacionamiento");
             Console.WriteLine("2) Registrar entrada");
             Console.WriteLine("3) Liberar lugar y cobrar");
             Console.WriteLine("4) Mostrar caja");
             Console.WriteLine("5) Reubicar vehículo");
-            Console.WriteLine("6) Salirrrrrrrrrrr");
+            Console.WriteLine("6) Salir");
             Console.WriteLine("----------------------------------------------------------");
         }
 
@@ -133,6 +134,7 @@ namespace EstacionamientoPremium
 
         private static bool PatenteValida(string patente)
         {
+            // La patente debe ser de 3 dígitos numéricos
             if (patente.Length != 3) return false;
             foreach (char c in patente)
             {
@@ -207,18 +209,14 @@ namespace EstacionamientoPremium
         {
             Console.Clear();
             Console.WriteLine("--- REGISTRANDO ENTRADA ---\n");
-            int tipo = SeleccionarTipoVehiculo();
-            if (tipo == 0) return;
+            int tipo = SeleccionarTipoVehiculo(); // Obtiene el tipo de vehículo (Moto, Auto, Camioneta)
+            if (tipo == 0) return; // Si el usuario cancela la selección de tipo
 
-            string patente = LeerPatente();
-            if (string.IsNullOrEmpty(patente)) return;
+            string patente = LeerPatente(); // Obtiene la patente
+            if (string.IsNullOrEmpty(patente)) return; // Si el usuario cancela la entrada de patente
 
-            if (PatenteYaExiste(patente))
-            {
-                Console.WriteLine("Esa patente ya está dentro.");
-                Pausa();
-                return;
-            }
+            // La verificación de si la patente ya existe para ESE TIPO de vehículo
+            // se realizará dentro de RegistrarEnArea para cada área específica.
 
             switch (tipo)
             {
@@ -242,6 +240,7 @@ namespace EstacionamientoPremium
             }
         }
 
+        // Nueva función para leer la patente
         private static string LeerPatente()
         {
             while (true)
@@ -249,14 +248,22 @@ namespace EstacionamientoPremium
                 string p = LeerCadena("Patente numérica de 3 dígitos (0 para cancelar): ").Trim();
                 if (p == "0") return string.Empty;
                 if (PatenteValida(p)) return p;
-                Console.WriteLine("Patente inválida.");
+                Console.WriteLine("Patente inválida. Debe ser de 3 dígitos numéricos.");
             }
         }
 
-        private static bool PatenteYaExiste(string patente)
+        // NUEVA FUNCIÓN: Verifica si una patente YA EXISTE para un tipo específico en un área dada.
+        // Esto permite que "123" (Moto) y "123" (Auto) coexistan.
+        private static bool PatenteYaExisteEnArea(string patente, string[] espacios, int[] tipos, int tipoBuscado)
         {
-            foreach (var p in EspaciosMotos) if (p == patente) return true;
-            foreach (var p in EspaciosGrandes) if (p == patente) return true;
+            for (int i = 0; i < espacios.Length; i++)
+            {
+                // Comprueba si el espacio está ocupado por la patente DADA Y coincide con el TIPO de vehículo BUSCADO
+                if (espacios[i] == patente && tipos[i] == tipoBuscado)
+                {
+                    return true;
+                }
+            }
             return false;
         }
 
@@ -264,7 +271,17 @@ namespace EstacionamientoPremium
         {
             if (ocupados >= capacidad)
             {
-                Console.WriteLine("El área está llena.");
+                Console.WriteLine($"El área de {TipoVehiculoTexto(tipoVehiculo)} está llena.");
+                Pausa();
+                return;
+            }
+
+            // AHORA: Verificamos si esta combinación específica (patente + tipo de vehículo)
+            // ya está registrada en esta área.
+            if (PatenteYaExisteEnArea(patente, espacios, tipos, tipoVehiculo))
+            {
+                Console.WriteLine($"Error: La patente '{patente}' para un '{TipoVehiculoTexto(tipoVehiculo)}' ya está registrada en esta área.");
+                Console.WriteLine("Si desea registrar la misma patente con un tipo de vehículo diferente, elija la opción correspondiente.");
                 Pausa();
                 return;
             }
@@ -279,7 +296,7 @@ namespace EstacionamientoPremium
                 }
                 else if (!string.IsNullOrEmpty(espacios[lugar]))
                 {
-                    Console.WriteLine("Lugar ocupado.");
+                    Console.WriteLine($"Lugar {lugar + 1} ocupado por {espacios[lugar]} ({TipoVehiculoTexto(tipos[lugar])}).");
                     lugar = -1; // fuerza repetir
                 }
             } while (lugar < 0 || lugar >= capacidad);
@@ -287,7 +304,7 @@ namespace EstacionamientoPremium
             espacios[lugar] = patente;
             tipos[lugar] = tipoVehiculo;
             ocupados++;
-            Console.WriteLine($"Vehículo registrado en lugar {lugar + 1}.");
+            Console.WriteLine($"Vehículo '{patente}' ({TipoVehiculoTexto(tipoVehiculo)}) registrado en lugar {lugar + 1}.");
             Pausa();
         }
 
@@ -302,21 +319,51 @@ namespace EstacionamientoPremium
             string patente = LeerCadena("Ingrese patente para salir (0 cancelar): ").Trim();
             if (patente == "0") return;
 
-            if (EliminarDeArea(patente, EspaciosMotos, TipoVehiculoMotos, MAX_MOTOS, ref MotosOcupadas,PRECIO_MOTO)) return;
-            if (EliminarDeArea(patente, EspaciosGrandes, TipoVehiculoGrandes, MAX_GRANDES, ref GrandesOcupados, null)) return; // precio dentro
+            // Solicitar el tipo de vehículo para diferenciar patentes iguales
+            int tipo = SeleccionarTipoVehiculoParaSalida();
+            if (tipo == 0) return; // Si el usuario cancela
 
-            Console.WriteLine("Patente no encontrada.");
+            bool encontrado = false;
+
+            // Intentar eliminar de la zona de motos si el tipo es moto
+            if (tipo == TIPO_MOTO)
+            {
+                encontrado = EliminarDeArea(patente, tipo, EspaciosMotos, TipoVehiculoMotos, MAX_MOTOS, ref MotosOcupadas, PRECIO_MOTO);
+            }
+            // Intentar eliminar de la zona de grandes si el tipo es auto o camioneta
+            else if (tipo == TIPO_AUTO || tipo == TIPO_CAMIONETA)
+            {
+                encontrado = EliminarDeArea(patente, tipo, EspaciosGrandes, TipoVehiculoGrandes, MAX_GRANDES, ref GrandesOcupados, null); // precio se calcula dentro
+            }
+
+            if (!encontrado)
+            {
+                Console.WriteLine($"Patente '{patente}' ({TipoVehiculoTexto(tipo)}) no encontrada o no coincide con el tipo de vehículo especificado.");
+            }
             Pausa();
         }
 
-                private static bool EliminarDeArea(string patente, string[] espacios, int[] tipos, int capacidad, ref int ocupados, int? precioFijo)
+        // Nueva función para seleccionar el tipo de vehículo al salir/reubicar
+        private static int SeleccionarTipoVehiculoParaSalida()
+        {
+            while (true)
+            {
+                int tipo = LeerEntero("Tipo de vehículo a salir/reubicar (1:Moto 2:Auto 3:Camioneta 0:Cancelar): ");
+                if (tipo is >= 0 and <= 3) return tipo;
+                Console.WriteLine("Tipo inválido.");
+            }
+        }
+
+        // Modificada para buscar por patente Y tipo de vehículo
+        private static bool EliminarDeArea(string patente, int tipoVehiculoBuscado, string[] espacios, int[] tipos, int capacidad, ref int ocupados, int? precioFijo)
         {
             for (int i = 0; i < capacidad; i++)
             {
-                if (espacios[i] == patente)
+                // Ahora verificamos tanto la patente como el tipo de vehículo
+                if (espacios[i] == patente && tipos[i] == tipoVehiculoBuscado)
                 {
-                    int tipo = tipos[i];
-                    int monto = precioFijo ?? tipo switch
+                    int tipoEncontrado = tipos[i]; // El tipo real del vehículo encontrado
+                    int monto = precioFijo ?? tipoEncontrado switch // Usa el tipo encontrado para el precio
                     {
                         TIPO_AUTO => PRECIO_AUTO,
                         TIPO_CAMIONETA => PRECIO_CAMIONETA,
@@ -328,12 +375,11 @@ namespace EstacionamientoPremium
                     ocupados--;
 
                     CajaTotal += monto;
-                    if (tipo == TIPO_MOTO) CajaMotos += monto;
-                    if (tipo == TIPO_AUTO) CajaAutos += monto;
-                    if (tipo == TIPO_CAMIONETA) CajaCamionetas += monto;
+                    if (tipoEncontrado == TIPO_MOTO) CajaMotos += monto;
+                    if (tipoEncontrado == TIPO_AUTO) CajaAutos += monto;
+                    if (tipoEncontrado == TIPO_CAMIONETA) CajaCamionetas += monto;
 
-                    Console.WriteLine($"Vehículo retirado. Se cobró: ${monto}.");
-                    Pausa();
+                    Console.WriteLine($"Vehículo '{patente}' ({TipoVehiculoTexto(tipoEncontrado)}) retirado del lugar {i + 1}. Se cobró: ${monto}.");
                     return true;
                 }
             }
@@ -367,27 +413,40 @@ namespace EstacionamientoPremium
             string patente = LeerCadena("Ingrese la patente a mover (0 cancelar): ").Trim();
             if (patente == "0") return;
 
-            if (!PatenteYaExiste(patente))
+            // Solicitar el tipo de vehículo para diferenciar patentes iguales
+            int tipo = SeleccionarTipoVehiculoParaSalida();
+            if (tipo == 0) return; // Si el usuario cancela
+
+            bool encontrado = false;
+
+            // Buscar y reubicar en la zona de motos si el tipo es moto
+            if (tipo == TIPO_MOTO)
             {
-                Console.WriteLine("Esa patente no está registrada.");
-                Pausa();
-                return;
+                encontrado = BuscarYReubicar(patente, tipo, EspaciosMotos, TipoVehiculoMotos, MAX_MOTOS);
+            }
+            // Buscar y reubicar en la zona de grandes si el tipo es auto o camioneta
+            else if (tipo == TIPO_AUTO || tipo == TIPO_CAMIONETA)
+            {
+                encontrado = BuscarYReubicar(patente, tipo, EspaciosGrandes, TipoVehiculoGrandes, MAX_GRANDES);
             }
 
-            // Buscar en motos
-            if (BuscarYReubicar(patente, EspaciosMotos, TipoVehiculoMotos, MAX_MOTOS)) return;
-            // Buscar en grandes
-            if (BuscarYReubicar(patente, EspaciosGrandes, TipoVehiculoGrandes, MAX_GRANDES)) return;
+            if (!encontrado)
+            {
+                Console.WriteLine($"Patente '{patente}' ({TipoVehiculoTexto(tipo)}) no encontrada para el tipo de vehículo especificado en ninguna área.");
+            }
+            Pausa();
         }
 
-        private static bool BuscarYReubicar(string patente, string[] espacios, int[] tipos, int capacidad)
+        // Modificada para buscar por patente Y tipo de vehículo
+        private static bool BuscarYReubicar(string patente, int tipoVehiculoBuscado, string[] espacios, int[] tipos, int capacidad)
         {
             for (int i = 0; i < capacidad; i++)
             {
-                if (espacios[i] == patente)
+                // Ahora verificamos tanto la patente como el tipo de vehículo
+                if (espacios[i] == patente && tipos[i] == tipoVehiculoBuscado)
                 {
-                    int tipo = tipos[i];
-                    Console.WriteLine($"Patente encontrada en lugar {i + 1} ({TipoVehiculoTexto(tipo)}).");
+                    int tipoEncontrado = tipos[i]; // El tipo real del vehículo encontrado
+                    Console.WriteLine($"Patente '{patente}' ({TipoVehiculoTexto(tipoEncontrado)}) encontrada en lugar {i + 1}.");
 
                     int nuevoLugar;
                     do
@@ -399,18 +458,18 @@ namespace EstacionamientoPremium
                         }
                         else if (!string.IsNullOrEmpty(espacios[nuevoLugar]))
                         {
-                            Console.WriteLine("Ese lugar está ocupado.");
-                            nuevoLugar = -1;
+                            Console.WriteLine($"Ese lugar {nuevoLugar + 1} está ocupado por {espacios[nuevoLugar]} ({TipoVehiculoTexto(tipos[nuevoLugar])}).");
+                            nuevoLugar = -1; // fuerza repetir
                         }
                     } while (nuevoLugar < 0 || nuevoLugar >= capacidad);
 
-                    espacios[i] = string.Empty;
-                    tipos[i] = 0;
-                    espacios[nuevoLugar] = patente;
-                    tipos[nuevoLugar] = tipo;
+                    // Mover el vehículo
+                    espacios[i] = string.Empty; // Vaciar el lugar original
+                    tipos[i] = 0; // Resetear el tipo del lugar original
+                    espacios[nuevoLugar] = patente; // Ocupar el nuevo lugar con la patente
+                    tipos[nuevoLugar] = tipoEncontrado; // Asignar el tipo al nuevo lugar
 
-                    Console.WriteLine($"Vehículo movido al lugar {nuevoLugar + 1}.");
-                    Pausa();
+                    Console.WriteLine($"Vehículo '{patente}' ({TipoVehiculoTexto(tipoEncontrado)}) movido al lugar {nuevoLugar + 1}.");
                     return true;
                 }
             }
@@ -420,4 +479,3 @@ namespace EstacionamientoPremium
         #endregion
     }
 }
-
